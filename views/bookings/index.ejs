@@ -1,0 +1,44 @@
+<% layout("/layouts/boilerplate") %> 
+ 
+<h2 class="mt-4">My Bookings</h2> 
+ 
+<table class="table table-bordered table-striped mt-3"> 
+  <thead class="table-dark"> 
+    <tr> 
+      <th>Listing</th> 
+      <th>Check-in</th> 
+      <th>Check-out</th> 
+      <th>Status</th> 
+    </tr> 
+  </thead> 
+  <tbody> 
+    <% if (myBookings.length === 0) { %> 
+      <tr> 
+        <td colspan="4" class="text-center">No bookings yet.</td> 
+      </tr> 
+    <% } else { %> 
+      <% myBookings.forEach(booking => { %> 
+        <tr> 
+          <td> 
+            <a href="/listing/<%= booking.listing._id %>"> 
+              <%= booking.listing.title %> 
+            </a> 
+          </td> 
+          <td><%= booking.startDate.toDateString() %></td> 
+          <td><%= booking.endDate.toDateString() %></td> 
+          <td> 
+            <% if (booking.status === "pending") { %> 
+              <span class="badge bg-warning">Pending</span> 
+            <% } else if (booking.status === "accepted") { %> 
+              <span class="badge bg-success">Accepted</span> 
+            <% } else if (booking.status === "rejected") { %> 
+              <span class="badge bg-danger">Rejected</span> 
+            <% } else if (booking.status === "cancelled") { %> 
+              <span class="badge bg-secondary">Cancelled</span> 
+            <% } %> 
+          </td> 
+        </tr> 
+      <% }) %> 
+    <% } %> 
+  </tbody> 
+</table>

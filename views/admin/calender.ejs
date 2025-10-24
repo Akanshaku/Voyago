@@ -1,0 +1,59 @@
+<% layout("/layouts/boilerplate") %> 
+ 
+<h1 class="mt-4 mb-4 text-center">             Booking Calendar</h1> 
+ 
+<div id="calendar"></div> 
+ 
+<!-- Socket.io client --> 
+<script src="/socket.io/socket.io.js"></script> 
+ 
+<script> 
+  document.addEventListener('DOMContentLoaded', function () { 
+    const socket = io(); 
+ 
+    // Register admin only if currUser exists and is admin 
+    const adminId = "<%= currUser ? currUser._id : '' %>"; 
+    if (adminId) { 
+      socket.emit('register', { userId: adminId, role: '<%= currUser.role || "user" %>' }); 
+    } 
+ 
+    var calendarEl = document.getElementById('calendar'); 
+    var calendar = new FullCalendar.Calendar(calendarEl, { 
+      initialView: 'dayGridMonth', 
+      headerToolbar: { 
+        left: 'prev,next today', 
+        center: 'title', 
+        right: 'dayGridMonth,timeGridWeek,timeGridDay' 
+      }, 
+      events: '/admin/bookings/json', 
+      eventClick: function(info) { 
+        alert('Booking: ' + info.event.title + '\nStarts: ' + info.event.start); 
+      } 
+    }); 
+    calendar.render(); 
+ 
+    // Listen for live updates and refetch events 
+    socket.on('availabilityChange', function(data) { 
+      // If change affects current admin listing, refetch events 
+      // we simply refetch all events (cheap for small admin dashboards) 
+      calendar.refetchEvents(); 
+      // optionally show a small toast 
+      console.log('Availability changed:', data); 
+    }); 
+ 
+    // Also listen to generic notifications (toast) 
+    socket.on('notification', function(data) { 
+      if (data && data.message) { 
+        // simple alert; you can replace with toast 
+        alert(data.message); 
+      } 
+    }); 
+  }); 
+</script> 
+ 
+<style> 
+  #calendar { 
+    max-width: 900px; 
+    margin: 0 auto; 
+  } 
+</style> 

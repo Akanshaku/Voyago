@@ -1,0 +1,92 @@
+<style> 
+  .search-btn { 
+    background: linear-gradient(135deg, #fe424d, #fc5c7d); 
+    color: white; 
+    border-radius: 25px; 
+    padding: 0 1.5rem; 
+    transition: all 0.3s ease; 
+  } 
+ 
+  .search-btn:hover { 
+    background: linear-gradient(135deg, #fc5c7d, #fe424d); 
+    transform: scale(1.05); 
+  } 
+ 
+  .search-inp { 
+    border-radius: 25px; 
+    padding: 0.5rem 2rem; 
+    font-size: 1rem; 
+    border: 1px solid #ccc; 
+    width: 280px; 
+  } 
+ 
+  .navbar-brand { 
+    font-weight: bold; 
+    font-size: 1.5rem; 
+    color: #fe424d; 
+  } 
+ 
+  .nav-link { 
+    font-weight: 500; 
+    padding: 0.5rem 1rem; 
+    transition: color 0.2s ease; 
+  } 
+ 
+  .nav-link:hover { 
+    color: #fe424d; 
+  } 
+</style> 
+ 
+<nav class="navbar navbar-expand-md bg-white border-bottom sticky-top shadow-sm"> 
+  <div class="container-fluid"> 
+    <a class="navbar-brand" href="/listing"> 
+      <i class="fa-solid fa-compass"></i> Voyago 
+    </a> 
+ 
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs
+target="#navbarNavAltMarkup"> 
+      <span class="navbar-toggler-icon"></span> 
+    </button> 
+ 
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup"> 
+      <!-- Left nav --> 
+      <div class="navbar-nav"> 
+        <a class="nav-link" href="/listing"><b>Explore</b></a> 
+        <% if (currUser && currUser.role === 'admin') { %> 
+          <a class="nav-link" href="/admin/dashboard"><b>Admin Dashboard</b></a> 
+        <% } %> 
+      </div> 
+ 
+      <!-- Search Bar Center --> 
+<div class="mx-auto"> 
+  <form class="d-flex" role="search" action="/listing" method="GET"> 
+    <input 
+      class="form-control me-2 search-inp" 
+      name="q" 
+      type="search" 
+      placeholder="Search by location or title" 
+      value="<%= typeof query !== 'undefined' ? query : '' %>" 
+    /> 
+    <button class="btn search-btn" type="submit"> 
+      <i class="fa-solid fa-magnifying-glass"></i> Search 
+    </button> 
+  </form> 
+</div> 
+ 
+      <!-- Right nav --> 
+      <div class="navbar-nav ms-auto"> 
+        <% if (currUser) { %> 
+          <% if (currUser.role !== 'admin') { %> 
+            <a class="nav-link" href="/listing/<%= currUser._id %>/bookings/mine"><b>My 
+Bookings</b></a> 
+          <% } %> 
+          <a class="nav-link" href="/listing/new"><b>Host Your Home</b></a> 
+          <a class="nav-link" href="/logout"><b>Logout</b></a> 
+        <% } else { %> 
+          <a class="nav-link" href="/signup"><b>Sign up</b></a> 
+          <a class="nav-link" href="/login"><b>Log in</b></a> 
+        <% } %> 
+      </div> 
+    </div> 
+  </div> 
+</nav>

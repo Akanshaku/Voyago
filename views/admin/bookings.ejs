@@ -1,0 +1,80 @@
+<% layout("/layouts/boilerplate") %> 
+ 
+<h1 class="text-center mt-4">Manage Bookings</h1> 
+<p class="text-center">Approve, reject, or cancel bookings for your listing.</p> 
+ 
+<!-- Status Filter --> 
+<div class="text-center mb-3"> 
+  <form method="GET" action="/admin/bookings" class="d-inline-block"> 
+    <label for="statusFilter" class="form-label me-2">Filter by status:</label> 
+    <select id="statusFilter" name="status" onchange="this.form.submit()" class="form-select form
+select-sm d-inline-block" style="width:auto;"> 
+      <option value="">All</option> 
+      <option value="pending" <%= statusFilter==='pending' ? 'selected' : '' %>>Pending</option> 
+      <option value="accepted" <%= statusFilter==='accepted' ? 'selected' : '' %>>Accepted</option> 
+      <option value="rejected" <%= statusFilter==='rejected' ? 'selected' : '' %>>Rejected</option> 
+      <option value="cancelled" <%= statusFilter==='cancelled' ? 'selected' : '' %>>Cancelled</option> 
+    </select> 
+  </form> 
+</div> 
+ 
+<div class="row mt-3"> 
+  <% if (!bookings || bookings.length === 0) { %> 
+    <p class="text-center">No bookings found.</p> 
+  <% } else { %> 
+    <table class="table table-bordered table-striped"> 
+      <thead> 
+        <tr> 
+          <th>listing</th> 
+          <th>User</th> 
+          <th>Check-in</th> 
+          <th>Check-out</th> 
+          <th>Status</th> 
+          <th>Actions</th> 
+        </tr> 
+      </thead> 
+      <tbody> 
+        <% bookings.forEach(booking => { %> 
+          <tr> 
+            <td><%= booking.listing?.title || 'N/A' %></td> 
+            <td><%= booking.user?.username || booking.user?.email || 'User' %></td> 
+            <td><%= booking.startDate ? (new Date(booking.startDate)).toDateString() : 'N/A' %></td> 
+            <td><%= booking.endDate ? (new Date(booking.endDate)).toDateString() : 'N/A' %></td> 
+            <td> 
+              <% if (booking.status === 'pending') { %> 
+                <span class="badge bg-warning">Pending</span> 
+              <% } else if (booking.status === 'accepted') { %> 
+                <span class="badge bg-success">Accepted</span> 
+              <% } else if (booking.status === 'rejected') { %> 
+                <span class="badge bg-danger">Rejected</span> 
+              <% } else if (booking.status === 'cancelled') { %> 
+                <span class="badge bg-secondary">Cancelled</span> 
+              <% } else { %> 
+                <span class="badge bg-secondary"><%= booking.status %></span> 
+              <% } %> 
+            </td> 
+            <td> 
+              <% if (booking.status === 'pending') { %> 
+                <form action="/admin/bookings/<%= booking._id %>/accept?_method=PATCH" 
+method="POST" style="display:inline;"> 
+                  <button class="btn btn-sm btn-success">Accept</button> 
+                </form> 
+                <form action="/admin/bookings/<%= booking._id %>/reject?_method=PATCH" 
+method="POST" style="display:inline;"> 
+                  <button class="btn btn-sm btn-danger">Reject</button> 
+                </form> 
+              <% } else if (booking.status === 'accepted') { %> 
+                <form action="/admin/bookings/<%= booking._id %>/cancel?_method=PATCH" 
+method="POST" style="display:inline;"> 
+                  <button class="btn btn-sm btn-warning">Cancel</button> 
+                </form> 
+              <% } else { %> 
+                <small>No actions</small> 
+              <% } %> 
+            </td> 
+          </tr> 
+        <% }); %> 
+      </tbody> 
+    </table> 
+  <% } %> 
+</div>

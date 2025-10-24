@@ -1,0 +1,72 @@
+<% layout("/layouts/boilerplate") %> 
+ 
+<h1 class="text-center mt-4">Admin Dashboard</h1> 
+<p class="text-center">Manage all your listing here. You can edit or delete any listing.</p> 
+ 
+<div class="text-center my-3"> 
+  <a href="/admin/bookings" class="btn btn-primary me-2"> 
+    <i class="fa-solid fa-calendar-check"></i> Manage Bookings 
+  </a> 
+  <a href="/admin/calendar" class="btn btn-success"> 
+    <i class="fa-solid fa-calendar-days"></i> Calendar View 
+  </a> 
+</div> 
+ 
+<% if (alllisting && alllisting.length > 0) { %> 
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3"> 
+    <% alllisting.forEach(listing => { %> 
+      <div class="card col listing-card mb-3" style="position: relative;"> 
+        <img  
+          src="<%= listing.image?.url || 'https://via.placeholder.com/400x300?text=No+Image' %>"  
+          class="card-img-top"  
+          style="height: 18rem; object-fit: cover;"  
+          alt="listing image" 
+        /> 
+        <div class="card-body"> 
+          <h5 class="card-title"><%= listing.title %></h5> 
+          <p class="card-text">₹<%= listing.price?.toLocaleString("en-IN") || 'N/A' %> / night</p> 
+          <p class="card-text"> 
+            <small class="text-muted"><%= listing.location || 'Location not specified' %></small> 
+          </p> 
+ 
+          <a href="/listing/<%= listing._id %>/edit" class="btn btn-warning btn-sm">Edit</a> 
+          <form action="/listing/<%= listing._id %>?_method=DELETE" method="POST" 
+style="display:inline;"> 
+            <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this 
+listing?');">Delete</button> 
+          </form> 
+        </div> 
+      </div> 
+    <% }); %> 
+  </div> 
+<% } else { %> 
+  <div class="alert alert-info text-center mt-4"> 
+    You have no listing yet. Start by adding one! 
+  </div> 
+<% } %> 
+ 
+<script src="/socket.io/socket.io.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+<script> 
+  const socket = io(); 
+ 
+  // Register this user on connection, only if logged in 
+  const userId = "<%= currUser ? currUser._id : '' %>"; 
+  const role = "<%= currUser ? currUser.role : '' %>"; 
+ 
+  if (userId) { 
+    socket.emit("register", { userId, role }); 
+  } 
+ 
+  socket.on("notification", (data) => { 
+    Swal.fire({ 
+      toast: true, 
+      position: "top-end", 
+      icon: data.type || "info", 
+      title: data.message, 
+      showConfirmButton: false, 
+      timer: 8000, 
+      timerProgressBar: true, 
+    }); 
+  }); 
+</script>
